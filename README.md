@@ -140,6 +140,13 @@ pytest -v
 
 ---
 
+## ⚡ Optimizations Implemented
+1. **Columns cast once at startup** (`cast`, `director`, `listed_in`) → no repeated `.cast()` per request.  
+2. **Polars LazyFrame** → filters applied efficiently only when needed.  
+3. **LRU caching** → repeated queries return instantly.  
+4. Substring search preserved with `.str.contains(..., literal=False)`.
+
+---
 ## Notes
 - Ensure `netflix_titles.csv` is in the **project root** before running the app.  
 - All string operations in `/search` automatically cast Polars categorical columns to strings, ensuring search works reliably.

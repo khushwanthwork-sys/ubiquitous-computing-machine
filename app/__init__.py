@@ -17,10 +17,10 @@ def init_dataset():
     print("[INFO] Loading dataset with Polars...")
     df = pl.read_csv(DATA_FILE)
 
-    # Optimize memory by casting likely categorical columns
-    for col in ("type", "listed_in", "rating", "country"):
+    # Cast commonly searched columns to Utf8 once
+    for col in ("cast", "director", "listed_in"):
         if col in df.columns:
-            df = df.with_columns(df[col].cast(pl.Categorical))
+            df = df.with_columns(df[col].cast(pl.Utf8))
 
     print(f"[INFO] Loaded dataset: {df.height} rows, {len(df.columns)} cols")
     return df
@@ -28,11 +28,11 @@ def init_dataset():
 def create_app():
     app = Flask(__name__)
 
-    # Load dataset at startup and stash on app config
+    # Load dataset at startup
     df = init_dataset()
     app.config["DF"] = df
 
-    # Register routes (import after df loaded to avoid circular surprises)
+    # Blueprint for routes
     from .routes import bp
     app.register_blueprint(bp)
 
