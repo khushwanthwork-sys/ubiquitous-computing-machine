@@ -272,7 +272,3 @@ class TestEdgeCases:
         response = client.get('/search?actor=%20%20Tom%20%20')  # "  Tom  "
         # Should either work or return validation error, but not crash
         assert response.status_code in [200, 400]
-
-
-# Run tests with: pytest tests/test_routes.py -v
-# Run with coverage: pytest tests/test_routes.py --cov=app --cov-report=html

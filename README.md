@@ -3,8 +3,8 @@
 A high-performance **Flask API** for searching Netflix shows/movies with optimized data processing using **Polars**.
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Flask](https://img.shields.io/badge/flask-3.0-green.svg)](https://flask.palletsprojects.com/)
-[![Polars](https://img.shields.io/badge/polars-0.20-orange.svg)](https://www.pola.rs/)
+[![Flask](https://img.shields.io/badge/flask-3.1.2-green.svg)](https://flask.palletsprojects.com/)
+[![Polars](https://img.shields.io/badge/polars-1.33.1-orange.svg)](https://www.pola.rs/)
 
 **Dataset Source**: [Netflix Shows on Kaggle](https://www.kaggle.com/datasets/shivamb/netflix-shows/data)
 
