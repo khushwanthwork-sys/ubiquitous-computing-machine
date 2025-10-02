@@ -1,25 +1,44 @@
-from flask import Blueprint, request, jsonify
-import pandas as pd
-from io import StringIO
+from flask import Blueprint, jsonify, request, current_app
+import polars as pl
 
 bp = Blueprint("main", __name__)
 
-@bp.route("/process-data", methods=["POST"])
-def process_data():
+def get_df():
+    df = current_app.config.get("DF")
+    if df is None:
+        raise RuntimeError("Dataset not loaded")
+    return df
+
+@bp.route("/search", methods=["GET"])
+def search():
     """
-    Example: expects CSV in request body
+    Query params:
+      - actor (matches 'cast' column)
+      - director (matches 'director' column)
+      - genre (matches 'listed_in' column)
+    Example: /search?actor=Tom+Hanks&genre=Drama
     """
     try:
-        csv_data = request.data.decode("utf-8")
-        df = pd.read_csv(StringIO(csv_data))
+        df = get_df()
 
-        # Example operation: count rows and columns
-        result = {
-            "rows": df.shape[0],
-            "columns": df.shape[1],
-            "columns_list": df.columns.tolist()
-        }
-        return jsonify(result), 200
+        actor = request.args.get("actor")
+        director = request.args.get("director")
+        genre = request.args.get("genre")
+
+        results = df
+
+        if actor and "cast" in df.columns:
+            results = results.filter(pl.col("cast").cast(pl.Utf8).str.contains(actor, literal=False))
+        if director and "director" in df.columns:
+            results = results.filter(pl.col("director").str.contains(director, literal=False))
+        if genre and "listed_in" in df.columns:
+            results = results.filter(pl.col("listed_in").cast(pl.Utf8).str.contains(genre, literal=False))
+
+        out = results.select(
+            [col for col in ("title", "type", "release_year") if col in df.columns]
+        ).head(10).to_dicts()
+
+        return jsonify({"results": out}), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"error": str(e)}), 500
